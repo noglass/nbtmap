@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#define _NBTVERSION_ 0019
+#define _NBTVERSION_ 0020
 
 class NBTCompound
 {
@@ -31,7 +31,7 @@ class NBTCompound
         std::unordered_map<std::string,std::string>::const_iterator cbegin() { return nbt.cbegin(); }
         std::unordered_map<std::string,std::string>::const_iterator cend() { return nbt.cend(); }
         
-        const std::string get(const std::string &key = "")
+        std::string get(const std::string &key = "")
         {
             if (key.size() < 1)
             {
@@ -55,7 +55,7 @@ class NBTCompound
         {
             auto v = nbt.emplace(key,value);
             if (!v.second)
-                nbt.at(key) = value;
+                v.first->second = value;
         }
         
         void parse(const std::string &nbt_data = "")
@@ -138,7 +138,7 @@ class NBTList
         NBTList(const std::string &nbt_data) { parse(nbt_data); }
         
         std::string& operator[] (size_t n) { return nbt.at(n); }
-        friend std::ostream& operator<< (std::ostream& stream, NBTList &list) { stream<<list.getList(); return stream; }
+        friend std::ostream& operator<< (std::ostream& stream, NBTList &list) { stream<<list.get(); return stream; }
         
         size_t size() { return nbt.size(); }
         void push_back(const std::string &item) { nbt.push_back(item); }
@@ -176,7 +176,20 @@ class NBTList
             return initial-nbt.size();
         }
         
-        const std::string get(int pos)
+        std::string get()
+        {
+            std::string full = "[";
+            if (nbt.size() > 0)
+            {
+                for (auto& it: nbt)
+                    full = full + it + ", ";
+                full.erase(full.size()-2,2);
+            }
+            full += "]";
+            return full;
+        }
+        
+        std::string get(int pos)
         {
             if (pos < 0)
                 pos = nbt.size()+pos;
@@ -185,7 +198,7 @@ class NBTList
             return "";
         }
         
-        const std::string get(size_t start, size_t len)
+        std::string get(size_t start, size_t len)
         {
             std::string full = "[";
             if ((start+1 < nbt.size()) && (len > 0))
@@ -201,25 +214,12 @@ class NBTList
             return full;
         }
     
-        const std::string get(std::vector<std::string>::iterator first, std::vector<std::string>::iterator last)
+        std::string get(std::vector<std::string>::iterator first, std::vector<std::string>::iterator last)
         {
             std::string full = "[";
             for (;first != last;++first)
                 full = full + *first + ", ";
             full.erase(full.size()-2,2);
-            full += "]";
-            return full;
-        }
-        
-        std::string getList()
-        {
-            std::string full = "[";
-            if (nbt.size() > 0)
-            {
-                for (auto& it: nbt)
-                    full = full + it + ", ";
-                full.erase(full.size()-2,2);
-            }
             full += "]";
             return full;
         }
