@@ -2,7 +2,7 @@
 
 int main()
 {
-    NBTCompound creeper ("{powered: 0b, ExplosionRadius: 3b, Fuse: 30s, ignited: 0b, Pos: [123.456f, 63.0f, 789.0f], fake: [{foo: bar, list: [0, 1, 2]},{foo: foo, list: [3, 4, 5]}]}");
+    NBTCompound creeper ("{powered: 0b, ExplosionRadius: 3b, Fuse: 30s, ignited: 0b, Pos: [123.456f, 63.0f, 789.0f], fake: [{foo: bar, list: [0, 1, 2]},{foo: foo, list: [3, 4, 5]}], 2d: [[0, 1, 2], [3, 4, 5], [6, 7, 8]]}");
     NBTList pos (creeper.get("Pos"));
     std::cout<<"NBTCompound creeper has the following data:\n";
     for (auto it = creeper.begin(), ite = creeper.end(); it != ite; ++it)

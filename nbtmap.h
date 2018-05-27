@@ -250,10 +250,14 @@ class NBTList
                 else if (*it == '}')
                     cBrace--;
                 else if (*it == '[')
+                {
                     sBrace++;
+                    if (sBrace == 1)
+                        continue;
+                }
                 else if (*it == ']')
                     sBrace--;
-                if ((!quote) && (*it != '[') && (*it != ' ') && (*it != ',') && (!starting) && (sBrace == 1))
+                if ((!quote) && (*it != ' ') && (*it != ',') && (!starting))
                 {
                     start = it;
                     starting = true;
