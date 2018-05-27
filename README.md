@@ -15,7 +15,7 @@ Usage:
 
 int main()
 {
-    NBTCompound creeper ("{powered: 0b, ExplosionRadius: 3b, Fuse: 30s, ignited: 0b, Pos: [123.456f, 63.0f, 789.0f], fake: [{foo: bar, list: [0, 1, 2]},{foo: foo, list: [3, 4, 5]}], 2d: [[0, 1, 2], [3, 4, 5], [6, 7, 8]]}");
+    NBTCompound creeper ("{powered: 0b, ExplosionRadius: 3b, Fuse: 30s, ignited: 0b, Pos: [123.456f, 63.0f, 789.0f], fake: [{foo: bar, list: [0, 1, 2]},{foo: foo, list: [3, 4, 5]}], 2d: [[0, 1, 2], [3, 4, 5], [6, 7, 8]], anotherList:[,,,, , , ,,, ,, , 1]}");
     NBTList pos (creeper.get("Pos"));
     std::cout<<"NBTCompound creeper has the following data:\n";
     for (auto it = creeper.begin(), ite = creeper.end(); it != ite; ++it)
@@ -34,6 +34,7 @@ Output:
 ```
 nigel@dontdeleteme:~/nbtmap$ ./example 
 NBTCompound creeper has the following data:
+creeper["anotherList"] = [,,,, , , ,,, ,, , 1]
 creeper["2d"] = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 creeper["fake"] = [{foo: bar, list: [0, 1, 2]},{foo: foo, list: [3, 4, 5]}]
 creeper["Pos"] = [123.456f, 63.0f, 789.0f]
@@ -52,25 +53,28 @@ contained["ExplosionRadius"] = 3b
 contained["Pos[0]"] = 123.456f
 contained["Pos"] = [123.456f, 63.0f, 789.0f]
 contained["fake[1].list[0]"] = 3
-contained["ignited"] = 0b
-contained["2d[1][1]"] = 4
-contained["2d[1][2]"] = 5
-contained["2d[0][2]"] = 2
-contained["Pos[2]"] = 789.0f
-contained["2d[0]"] = [0, 1, 2]
 contained["fake[1].list"] = [3, 4, 5]
+contained["fake[1]"] = {foo: foo, list: [3, 4, 5]}
 contained["fake[1].foo"] = foo
 contained["2d[0][0]"] = 0
-contained["2d"] = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-contained["2d[1][0]"] = 3
 contained["fake[1].list[1]"] = 4
 contained["fake"] = [{foo: bar, list: [0, 1, 2]},{foo: foo, list: [3, 4, 5]}]
 contained["fake[1].list[2]"] = 5
 contained["2d[0][1]"] = 1
-contained["2d[2]"] = [6, 7, 8]
-contained["fake[0].foo"] = bar
-contained["2d[2][0]"] = 6
+contained["anotherList[0]"] = 1
+contained["anotherList"] = [,,,, , , ,,, ,, , 1]
 contained["2d[2][1]"] = 7
+contained["2d[1][0]"] = 3
+contained["2d"] = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+contained["2d[0][2]"] = 2
+contained["Pos[2]"] = 789.0f
+contained["2d[0]"] = [0, 1, 2]
+contained["ignited"] = 0b
+contained["2d[1][1]"] = 4
+contained["2d[1][2]"] = 5
+contained["fake[0].foo"] = bar
+contained["2d[2]"] = [6, 7, 8]
+contained["2d[2][0]"] = 6
 contained["powered"] = 0b
 contained["fake[0].list[0]"] = 0
 contained["2d[2][2]"] = 8
@@ -81,5 +85,4 @@ contained["Pos[1]"] = 63.0f
 contained["2d[1]"] = [3, 4, 5]
 contained["fake[0].list[1]"] = 1
 contained["fake[0].list[2]"] = 2
-contained["fake[1]"] = {foo: foo, list: [3, 4, 5]}
 ```

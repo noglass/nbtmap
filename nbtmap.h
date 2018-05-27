@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+#define _NBTVERSION_ 0018
+
 class NBTCompound
 {
     private:
@@ -21,6 +23,7 @@ class NBTCompound
         
         size_t size() { return nbt.size(); }
         size_t erase(const std::string &key) { return nbt.erase(key); }
+        std::unordered_map<std::string,std::string>::iterator erase(std::unordered_map<std::string,std::string>::const_iterator pos) { return nbt.erase(pos); }
         void clear() { nbt.clear(); }
         
         std::unordered_map<std::string,std::string>::iterator begin() { return nbt.begin(); }
@@ -65,7 +68,7 @@ class NBTCompound
             int cBrace = 0, sBrace = 0;
             bool quote = false;
             bool starting = false;
-            for (auto it = data.begin(), start = data.begin(), ite = data.end();it != ite;++it)
+            for (auto it = data.begin(), start = it, ite = data.end();it != ite;++it)
             {
                 if (quote)
                 {
@@ -230,7 +233,7 @@ class NBTList
             int cBrace = 0, sBrace = 0;
             bool quote = false;
             bool starting = false;
-            for (auto it = data.begin(), start = data.begin(), ite = data.end();it != ite;++it)
+            for (auto it = data.begin(), start = it, ite = data.end();it != ite;++it)
             {
                 if (quote)
                 {
@@ -347,6 +350,7 @@ class NBTWrapper
         
         size_t size() { return nbt.size(); }
         size_t erase(const std::string &key) { return nbt.erase(key); }
+        std::unordered_map<std::string,std::string>::iterator erase(std::unordered_map<std::string,std::string>::const_iterator pos) { return nbt.erase(pos); }
         void clear() { nbt.clear(); }
         
         std::unordered_map<std::string,std::string>::iterator begin() { return nbt.begin(); }
