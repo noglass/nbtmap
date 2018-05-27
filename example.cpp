@@ -6,7 +6,7 @@ int main()
     NBTList pos (creeper.get("Pos"));
     std::cout<<"NBTCompound creeper has the following data:\n";
     for (auto it = creeper.begin(), ite = creeper.end(); it != ite; ++it)
-        std::cout<<it->first<<" = "<<it->second<<std::endl;
+        std::cout<<"creeper[\""<<it->first<<"\"] = "<<it->second<<std::endl;
     std::cout<<"\nNBTList pos has the following data:\n";
     for (int i = 0; i < pos.size(); ++i)
         std::cout<<"pos["<<i<<"] = "<<pos[i]<<std::endl;
