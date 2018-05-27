@@ -280,5 +280,83 @@ class NBTList
         }
 };
 
+class NBTWrapper
+{
+    private:
+        NBTCompound comp;
+        std::unordered_map<std::string,std::string> nbt;
+        void parseComp(std::string key, std::string data)
+        {
+            NBTCompound c (data);
+            for (auto it = c.begin(), ite = c.end();it != ite;++it)
+            {
+                nbt[key + "." + it->first] = it->second;
+                if (it->second.at(0) == '{')
+                    parseComp(key + "." + it->first,it->second);
+                else if (it->second.at(0) == '[')
+                    parseList(key + "." + it->first,it->second);
+            }
+        }
+        void parseList(std::string key, std::string data)
+        {
+            NBTList l (data);
+            int i = 0;
+            for (auto it = l.begin(), ite = l.end();it != ite;++it)
+            {
+                nbt[key + "[" + std::to_string(i) + "]"] = *it;
+                if (it->at(0) == '{')
+                    parseComp(key + "[" + std::to_string(i) + "]",*it);
+                else if (it->at(0) == '[')
+                    parseList(key + "[" + std::to_string(i) + "]",*it);
+                i++;
+            }
+        }
+    public:
+        NBTWrapper() { comp.clear(); }
+        NBTWrapper(NBTCompound data) { comp = data; parse(); }
+        NBTWrapper(const std::string &data) { comp.parse(data); parse(); }
+        
+        void parse()
+        {
+            if (nbt.size() > 0)
+                nbt.clear();
+            if (comp.size() > 0)
+            {
+                for (auto it = comp.begin(), ite = comp.end();it != ite;++it)
+                {
+                    nbt[it->first] = it->second;
+                    if (it->second.at(0) == '{')
+                        parseComp(it->first,it->second);
+                    else if (it->second.at(0) == '[')
+                        parseList(it->first,it->second);
+                }
+            }
+        }
+        
+        std::string get(const std::string &key = "") { if (key.size() < 1) return comp.get(); return nbt[key]; }
+        
+        std::string& operator[] (const std::string &key) { return nbt[key]; }
+        friend std::ostream& operator<< (std::ostream& stream, NBTWrapper &wrap) { stream<<wrap.get(); return stream; }
+        
+        size_t size() { return nbt.size(); }
+        size_t erase(const std::string &key) { return nbt.erase(key); }
+        void clear() { nbt.clear(); }
+        
+        std::unordered_map<std::string,std::string>::iterator begin() { return nbt.begin(); }
+        std::unordered_map<std::string,std::string>::iterator end() { return nbt.end(); }
+        std::unordered_map<std::string,std::string>::const_iterator cbegin() { return nbt.cbegin(); }
+        std::unordered_map<std::string,std::string>::const_iterator cend() { return nbt.cend(); }
+};
+
 #endif
+
+
+
+
+
+
+
+
+
+
 
