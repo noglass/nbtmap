@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#define _NBTVERSION_ 0018
+#define _NBTVERSION_ 0019
 
 class NBTCompound
 {
@@ -16,7 +16,7 @@ class NBTCompound
     
     public:
         NBTCompound() { data.clear(); nbt.clear(); }
-        NBTCompound(std::string nbt_data) { parse(nbt_data); }
+        NBTCompound(const std::string &nbt_data) { parse(nbt_data); }
         
         std::string& operator[] (const std::string &key) { return nbt[key]; }
         friend std::ostream& operator<< (std::ostream& stream, NBTCompound &comp) { stream<<comp.get(); return stream; }
@@ -51,14 +51,14 @@ class NBTCompound
             return "";
         }
         
-        void set(const std::string &key, std::string value)
+        void set(const std::string &key, const std::string &value)
         {
             auto v = nbt.emplace(key,value);
             if (!v.second)
                 nbt.at(key) = value;
         }
         
-        void parse(std::string nbt_data = "")
+        void parse(const std::string &nbt_data = "")
         {
             if (nbt_data.size() > 0)
                 data = nbt_data;
@@ -135,13 +135,13 @@ class NBTList
     
     public:
         NBTList() { data.clear(); nbt.clear(); }
-        NBTList(std::string nbt_data) { parse(nbt_data); }
+        NBTList(const std::string &nbt_data) { parse(nbt_data); }
         
         std::string& operator[] (size_t n) { return nbt.at(n); }
         friend std::ostream& operator<< (std::ostream& stream, NBTList &list) { stream<<list.getList(); return stream; }
         
         size_t size() { return nbt.size(); }
-        void push_back(std::string item) { nbt.push_back(item); }
+        void push_back(const std::string &item) { nbt.push_back(item); }
         void clear() { nbt.clear(); }
         
         std::vector<std::string>::iterator begin() { return nbt.begin(); }
@@ -181,7 +181,7 @@ class NBTList
             if (pos < 0)
                 pos = nbt.size()+pos;
             if ((pos > -1) && (pos < nbt.size()))
-                return nbt[pos];
+                return nbt.at(pos);
             return "";
         }
         
@@ -224,7 +224,7 @@ class NBTList
             return full;
         }
         
-        void parse(std::string nbt_data = "")
+        void parse(const std::string &nbt_data = "")
         {
             if (nbt_data.size() > 0)
                 data = nbt_data;
@@ -298,11 +298,12 @@ class NBTWrapper
             NBTCompound c (data);
             for (auto it = c.begin(), ite = c.end();it != ite;++it)
             {
-                nbt[key + "." + it->first] = it->second;
+                std::string index = key + "." + it->first;
+                nbt.emplace(index,it->second);
                 if (it->second.at(0) == '{')
-                    parseComp(key + "." + it->first,it->second);
+                    parseComp(index,it->second);
                 else if (it->second.at(0) == '[')
-                    parseList(key + "." + it->first,it->second);
+                    parseList(index,it->second);
             }
         }
         
@@ -312,29 +313,33 @@ class NBTWrapper
             int i = 0;
             for (auto it = l.begin(), ite = l.end();it != ite;++it)
             {
-                nbt[key + "[" + std::to_string(i) + "]"] = *it;
+                std::string index = key + "[" + std::to_string(i++) + "]";
+                nbt.emplace(index,*it);
                 if (it->at(0) == '{')
-                    parseComp(key + "[" + std::to_string(i) + "]",*it);
+                    parseComp(index,*it);
                 else if (it->at(0) == '[')
-                    parseList(key + "[" + std::to_string(i) + "]",*it);
-                i++;
+                    parseList(index,*it);
             }
         }
         
     public:
         NBTWrapper() { comp.clear(); }
-        NBTWrapper(NBTCompound data) { comp = data; parse(); }
-        NBTWrapper(const std::string &data) { comp.parse(data); parse(); }
+        NBTWrapper(const NBTCompound &data) { parse(data); }
+        NBTWrapper(const std::string &data) { parse(data); }
         
-        void parse()
+        void parse(const NBTCompound &data) { comp = data; parse(); }
+        
+        void parse(const std::string &data = "")
         {
+            if (data.size() > 0)
+                comp.parse(data);
             if (nbt.size() > 0)
                 nbt.clear();
             if (comp.size() > 0)
             {
                 for (auto it = comp.begin(), ite = comp.end();it != ite;++it)
                 {
-                    nbt[it->first] = it->second;
+                    nbt.emplace(it->first,it->second);
                     if (it->second.at(0) == '{')
                         parseComp(it->first,it->second);
                     else if (it->second.at(0) == '[')
@@ -343,7 +348,14 @@ class NBTWrapper
             }
         }
         
-        std::string get(const std::string &key = "") { if (key.size() < 1) return comp.get(); return nbt[key]; }
+        std::string get(const std::string &key = "")
+        {
+            if (key.size() < 1) return comp.get();
+            auto v = nbt.find(key);
+            if (v != nbt.end())
+                return v->second;
+            return "";
+        }
         
         std::string& operator[] (const std::string &key) { return nbt[key]; }
         friend std::ostream& operator<< (std::ostream& stream, NBTWrapper &wrap) { stream<<wrap.get(); return stream; }
