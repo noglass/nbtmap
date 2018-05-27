@@ -7,6 +7,8 @@ Requires at least C++11.
 
 All components are kept as strings, no internal conversions are made, and the library assumes all NBT is valid. Primarily meant for processing `data get` and `entitydata` output.  
 
+Using invalid NBT will produce undefined behaviour.  
+
 Usage:
 ```C++
 #include "nbtmap.h"
@@ -80,5 +82,4 @@ contained["2d[1]"] = [3, 4, 5]
 contained["fake[0].list[1]"] = 1
 contained["fake[0].list[2]"] = 2
 contained["fake[1]"] = {foo: foo, list: [3, 4, 5]}
-
 ```

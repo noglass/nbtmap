@@ -289,6 +289,7 @@ class NBTWrapper
     private:
         NBTCompound comp;
         std::unordered_map<std::string,std::string> nbt;
+        
         void parseComp(const std::string &key, const std::string &data)
         {
             NBTCompound c (data);
@@ -301,6 +302,7 @@ class NBTWrapper
                     parseList(key + "." + it->first,it->second);
             }
         }
+        
         void parseList(const std::string &key, const std::string &data)
         {
             NBTList l (data);
@@ -315,6 +317,7 @@ class NBTWrapper
                 i++;
             }
         }
+        
     public:
         NBTWrapper() { comp.clear(); }
         NBTWrapper(NBTCompound data) { comp = data; parse(); }
@@ -353,14 +356,4 @@ class NBTWrapper
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
 
